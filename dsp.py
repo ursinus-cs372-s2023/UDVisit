@@ -105,3 +105,43 @@ def istft(S, w, h):
         y[j*h:j*h+w] += np.real(xj)
     y /= (w/h/2)
     return y
+
+
+def plot_fourier_mag(x, fs):
+    """
+    Given audio samples and the sample rate, plot
+    the magnitude of the Fourier transform of x with 
+    the appropriate frequency labels
+    Parameters
+    ----------
+    x: ndarray(N)
+        The audio samples
+    fs: int
+        The sample rate in hz
+    """
+    xft = np.abs(np.fft.fft(x))
+    freqs = np.fft.fftfreq(len(x), 1/fs)
+    plt.plot(freqs[freqs > 0], xft[freqs > 0])
+    plt.xlabel("Frequency")
+    plt.ylabel("Magnitude")
+    return xft
+
+def plot_stft(S, sr, hop):
+    """
+    Plot the spectrogram associated to a short-time
+    Fourier Transform, using a log scale
+
+    Parameters
+    ----------
+    S: ndarray(win, n_frames, dtype=complex):
+        Short-time fourier transform
+    sr: int
+        Sample rate
+    hop: int
+        Hop length between frames
+    """
+    win = S.shape[0]
+    S = amplitude_to_db(np.abs(S))
+    plt.imshow(S, extent=(0, S.shape[1]*hop/sr, 0, sr), aspect='auto', cmap='magma')
+    plt.xlabel("Time (Sec)")
+    plt.ylabel("Frequency (hz)")
